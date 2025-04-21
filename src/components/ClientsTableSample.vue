@@ -2,78 +2,61 @@
   <div>
     <modal-box
       :is-active="isModalActive"
-      :trash-object-name="trashObject ? trashObject.name : null "
+      :trash-object-name="trashObject ? trashObject.nick : null "
+      :item="trashObject"
       @confirm="trashConfirm"
       @cancel="trashCancel"
     />
     <b-table
       :checked-rows.sync="checkedRows"
-      :checkable="checkable"
+      :checkable="false"
       :paginated="paginated"
       :per-page="perPage"
-      :data="clients"
+      :data="users"
       default-sort="name"
       striped
       hoverable
     >
       <b-table-column
         v-slot="props"
-        cell-class="has-no-head-mobile is-image-cell"
-      >
-        <div class="image">
-          <img
-            :src="props.row.avatar"
-            class="is-rounded"
-          >
-        </div>
-      </b-table-column>
-      <b-table-column
-        v-slot="props"
         label="Name"
-        field="name"
+        field="contact_name"
         sortable
       >
-        {{ props.row.name }}
+        {{ props.row.contact_name }}
       </b-table-column>
       <b-table-column
         v-slot="props"
-        label="Company"
-        field="company"
+        label="Numero"
+        field="numero"
         sortable
       >
-        {{ props.row.company }}
+        {{ props.row.number }}
       </b-table-column>
       <b-table-column
         v-slot="props"
-        label="City"
-        field="city"
+        label="Nick"
+        field="nick"
         sortable
       >
-        {{ props.row.city }}
+        {{ props.row.nick }}
       </b-table-column>
       <b-table-column
         v-slot="props"
-        cell-class="is-progress-col"
-        label="Progress"
-        field="progress"
+        label="Confirmado"
+        field="confirm"
         sortable
       >
-        <progress
-          class="progress is-small is-info"
-          :value="props.row.progress"
-          max="100"
-        >
-          {{ props.row.progress }}
-        </progress>
+        {{ props.row.confirm }}
       </b-table-column>
       <b-table-column
         v-slot="props"
-        label="Created"
+        label="Fecha Confirmacion"
       >
         <small
           class="has-text-grey is-abbr-like"
-          :title="props.row.created"
-        >{{ props.row.created }}</small>
+          :title="props.row.created_at"
+        >{{ props.row.created_at }}</small>
       </b-table-column>
       <b-table-column
         v-slot="props"
@@ -146,24 +129,34 @@ export default defineComponent({
   },
   computed: {
     paginated () {
-      return this.clients.length > this.perPage
+      return this.users.length > this.perPage
     },
     ...mapState([
-      'clients'
+      'users', 'error'
     ])
+  },
+  watch: {
+    error (newVal, oldVal) {
+      if (newVal) {
+        this.$buefy.snackbar.open({
+          message: 'Confirmed',
+          queue: false
+        })
+      }
+    }
+  },
+  mounted () {
+    this.$store.dispatch('fetchUsers', {})
   },
   methods: {
     trashModalOpen (obj) {
       this.trashObject = obj
       this.isModalActive = true
     },
-    trashConfirm () {
+    trashConfirm (id) {
       this.isModalActive = false
-
-      this.$buefy.snackbar.open({
-        message: 'Confirmed',
-        queue: false
-      })
+      console.log('id2', id)
+      this.$store.dispatch('deleteRevealConfirm', { id })
     },
     trashCancel () {
       this.isModalActive = false

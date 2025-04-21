@@ -31,7 +31,7 @@
         </b-button>
         <b-button
           type="is-danger"
-          @click="confirm"
+          @click="confirm()"
         >
           Delete
         </b-button>
@@ -50,6 +50,10 @@ export default defineComponent({
     trashObjectName: {
       type: String,
       default: null
+    },
+    item: {
+      default: null,
+      type: Object
     }
   },
   emits: ['cancel', 'confirm'],
@@ -67,7 +71,9 @@ export default defineComponent({
   },
   methods: {
     confirm () {
-      this.$emit('confirm')
+      const { id } = this.item
+      console.log('id', id)
+      this.$emit('confirm', id)
     },
     cancel () {
       this.$emit('cancel')

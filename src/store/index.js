@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
+import menu from '../menu'
+
+const api = process.env.VUE_APP_API_URL
 
 Vue.use(Vuex)
 
@@ -24,13 +27,20 @@ const store = new Vuex.Store({
     /* Sample data (commonly used) */
     clients: [],
 
+    users: [],
+
     //
-    items: []
+    items: [],
+    ajaxError: null
   },
   mutations: {
     /* A fit-them-all commit */
     basic (state, payload) {
       state[payload.key] = payload.value
+    },
+
+    users (state, payload) {
+      state.users = payload
     },
 
     /* User */
@@ -75,6 +85,9 @@ const store = new Vuex.Store({
     },
     fullItems (state, payload) {
       state.items = payload
+    },
+    error (state, payload) {
+      state.ajaxError = payload
     }
   },
   actions: {
@@ -113,9 +126,28 @@ const store = new Vuex.Store({
           alert(error.message)
         })
     },
+    fetchUsers ({ commit }, payload) {
+      axios
+        .get(`${api}/whatsapp/messages`)
+        .then(r => {
+          commit('users', r.data.data)
+        }).catch(err => {
+          console.error(err)
+        })
+    },
+    deleteRevealConfirm ({ commit, dispatch }, payload) {
+      axios.delete(`${api}/whatsapp/reveal/${payload.id}`)
+        .then(response => {
+          commit('error', null)
+          dispatch('fetchUsers', {})
+        }).catch(error => {
+          console.error(error)
+          commit('error', error)
+        })
+    },
     deleteItemMenu ({ commit }, payload) {
       axios
-        .delete(`http://bag-sys.py:8084/api/v1/menu/${payload.parentId}/${payload.id}`)
+        .delete(`${api}/${payload.parentId}/${payload.id}`)
         .then(r => {
           console.log(r.data)
         }).catch(err => {
@@ -123,13 +155,15 @@ const store = new Vuex.Store({
         })
     },
     getAllItemMenu ({ commit }, payload) {
-      axios.get('http://bag-sys.py:8084/api/v1/menu')
+      commit('fullItems', menu)
+      /* axios.get('http://bag-sys.py:8084/api/v1/menu')
         .then(response => {
           console.log('data', JSON.stringify(response))
           commit('fullItems', response.data)
         }).catch(error => {
           console.error('Error al obtener los datos:', error)
         })
+      */
     }
   }
 })
