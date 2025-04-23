@@ -4,6 +4,7 @@
   >
     <b-upload
       v-model="file"
+      :multiple="false"
       :accept="accept"
       @input="upload"
     >

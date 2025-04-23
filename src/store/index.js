@@ -4,6 +4,7 @@ import axios from 'axios'
 import menu from '../menu'
 
 const api = process.env.VUE_APP_API_URL
+const api_ = process.env.VUE_APP_API_URL_2
 
 Vue.use(Vuex)
 
@@ -31,7 +32,9 @@ const store = new Vuex.Store({
 
     //
     items: [],
-    ajaxError: null
+    ajaxError: null,
+
+    contacts: []
   },
   mutations: {
     /* A fit-them-all commit */
@@ -88,6 +91,9 @@ const store = new Vuex.Store({
     },
     error (state, payload) {
       state.ajaxError = payload
+    },
+    contacts (state, payload) {
+      state.contacts = payload
     }
   },
   actions: {
@@ -164,6 +170,15 @@ const store = new Vuex.Store({
           console.error('Error al obtener los datos:', error)
         })
       */
+    },
+    getContacts ({ commit }) {
+      axios.get(`${api_}/contacts`)
+        .then(response => {
+          console.log('ok contacts', JSON.stringify(response.data))
+          commit('contacts', response.data.response)
+        }).catch(error => {
+          console.error('error contacts', error)
+        })
     }
   }
 })
