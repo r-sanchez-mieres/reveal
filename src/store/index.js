@@ -34,7 +34,11 @@ const store = new Vuex.Store({
     items: [],
     ajaxError: null,
 
-    contacts: []
+    contacts: [],
+
+    isLoading: false,
+
+    errorGetContacts: null
   },
   mutations: {
     /* A fit-them-all commit */
@@ -94,6 +98,14 @@ const store = new Vuex.Store({
     },
     contacts (state, payload) {
       state.contacts = payload
+    },
+
+    isLoading (state, payload) {
+      state.isLoading = payload
+    },
+
+    errorGetContacts (state, payload) {
+      state.errorGetContacts = payload
     }
   },
   actions: {
@@ -178,6 +190,7 @@ const store = new Vuex.Store({
           commit('contacts', response.data.response)
         }).catch(error => {
           console.error('error contacts', error)
+          commit('errorGetContacts', 'Error al obtener contactos')
         })
     }
   }

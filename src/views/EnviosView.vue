@@ -153,7 +153,9 @@ export default defineComponent({
       filteredTags: [],
       isSelectOnly: false,
       tags: [],
-      imageUrl: null
+      imageUrl: null,
+      isLoading: true,
+      isFullPage: false
     }
   },
   computed: {
